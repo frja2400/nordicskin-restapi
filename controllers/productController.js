@@ -3,8 +3,30 @@ const Product = require('../models/product');
 // Hämta alla produkter
 exports.getAllProducts = async (request, h) => {
     try {
-        return h.response({ products: await Product.find() }).code(200);
+        // Hämtar query-parametrarna från URL:en
+        const { search, category, sort } = request.query;
+
+        // Bygger query-objekt
+        const query = {};
+        if (search) {
+            query.name = { $regex: search, $options: 'i' };
+        }
+        if (category) {
+            query.category = category;
+        }
+
+        // Bygg query med sort
+        let productsQuery = Product.find(query);
+        if (sort) {
+            productsQuery = productsQuery.sort({ [sort]: 1 }); // 1 = stigande
+        }
+
+        // Kör queryn mot databasen och hämtar resultaten
+        const products = await productsQuery;
+
+        return h.response({ products }).code(200);
     } catch (error) {
+        console.error(error);
         return h.response({ error: 'Could not fetch products' }).code(500);
     }
 };

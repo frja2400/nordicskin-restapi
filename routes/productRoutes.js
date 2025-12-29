@@ -7,7 +7,17 @@ module.exports = (server) => {
         {
             method: "GET",
             path: "/api/products",
-            handler: productController.getAllProducts
+            handler: productController.getAllProducts,
+            options: {
+                validate: {
+                    query: Joi.object({
+                        // Lägger till validering på query-parametrarna för sökning, filtrering och sortering.
+                        search: Joi.string().optional(),
+                        category: Joi.string().valid('hudvård', 'makeup', 'verktyg').optional(),
+                        sort: Joi.string().valid('name', 'stock', 'updatedAt').optional()
+                    })
+                }
+            }
         },
         {
             method: "GET",
