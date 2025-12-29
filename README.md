@@ -4,7 +4,7 @@ Detta repository innehåller ett REST API byggt med Node.js, Hapi och MongoDB At
 
 ## Länk
 
-En liveversion av API:t finns tillgänglig på följande URL: 
+En liveversion av API:t finns tillgänglig på följande URL: https://nordicskin-restapi.onrender.com/
 
 ## Installation, databas
 
