@@ -2,6 +2,7 @@
 
 const Hapi = require('@hapi/hapi');
 const mongoose = require('mongoose');
+const Cookie = require('@hapi/cookie');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 require('dotenv').config();
@@ -19,10 +20,34 @@ const init = async () => {
     });
 
     try {
+        // Anslut till MongoDB
         await mongoose.connect(process.env.MONGO_URI);
         console.log('Connected to MongoDB');
 
-        // Registrera routes här
+        // Registrera cookie-plugin
+        await server.register(Cookie);
+
+        // Skapa auth-strategi
+        server.auth.strategy('session', 'cookie', {
+            cookie: {
+                name: 'nordicskin-session',
+                password: process.env.COOKIE_PASSWORD,
+                isSecure: false,
+                isHttpOnly: true
+            },
+            redirectTo: false,
+            validate: async (request, session) => {
+                if (!session.id) {
+                    return { isValid: false };
+                }
+                return {
+                    isValid: true,
+                    credentials: session
+                };
+            }
+        });
+
+        // Registrera routes
         userRoutes(server);
         productRoutes(server);
 
