@@ -1,0 +1,74 @@
+const productController = require('../controllers/productController');
+const Joi = require('joi');
+
+// Definierar routes för produkter och validerar med Joi.
+module.exports = (server) => {
+    server.route([
+        {
+            method: "GET",
+            path: "/api/products",
+            handler: productController.getAllProducts
+        },
+        {
+            method: "GET",
+            path: "/api/products/{id}",
+            handler: productController.getProductById,
+            options: {
+                validate: {
+                    params: Joi.object({
+                        id: Joi.string().length(24).required()
+                    })
+                }
+            }
+        },
+        {
+            method: "POST",
+            path: "/api/products",
+            handler: productController.addProduct,
+            options: {
+                validate: {
+                    payload: Joi.object({
+                        name: Joi.string().min(1).required(),
+                        price: Joi.number().positive().required(),
+                        stock: Joi.number().integer().min(0).required(),
+                        description: Joi.string().allow('').optional(),
+                        category: Joi.string().required(),
+                        imageUrl: Joi.string().uri().optional()
+                    })
+                }
+            }
+        },
+        {
+            method: "PUT",
+            path: "/api/products/{id}",
+            handler: productController.updateProductById,
+            options: {
+                validate: {
+                    params: Joi.object({
+                        id: Joi.string().length(24).required()
+                    }),
+                    payload: Joi.object({
+                        name: Joi.string().min(1),
+                        price: Joi.number().positive(),
+                        stock: Joi.number().integer().min(0),
+                        description: Joi.string().allow(''),
+                        category: Joi.string(),
+                        imageUrl: Joi.string().uri()
+                    })
+                }
+            }
+        },
+        {
+            method: "DELETE",
+            path: "/api/products/{id}",
+            handler: productController.deleteProductById,
+            options: {
+                validate: {
+                    params: Joi.object({
+                        id: Joi.string().length(24).required()
+                    })
+                }
+            }
+        }
+    ])
+}

@@ -2,6 +2,8 @@
 
 const Hapi = require('@hapi/hapi');
 const mongoose = require('mongoose');
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
 require('dotenv').config();
 
 const init = async () => {
@@ -21,6 +23,8 @@ const init = async () => {
         console.log('Connected to MongoDB');
 
         // Registrera routes här
+        userRoutes(server);
+        productRoutes(server);
 
         // Root-route för live-servern
         server.route({
