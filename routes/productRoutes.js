@@ -9,6 +9,7 @@ module.exports = (server) => {
             path: "/api/products",
             handler: productController.getAllProducts,
             options: {
+                auth: 'session',
                 validate: {
                     query: Joi.object({
                         // Lägger till validering på query-parametrarna för sökning, filtrering och sortering.
@@ -24,6 +25,7 @@ module.exports = (server) => {
             path: "/api/products/{id}",
             handler: productController.getProductById,
             options: {
+                auth: 'session',
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
@@ -36,6 +38,7 @@ module.exports = (server) => {
             path: "/api/products",
             handler: productController.addProduct,
             options: {
+                auth: 'session',
                 validate: {
                     payload: Joi.object({
                         name: Joi.string().min(1).required(),
@@ -53,6 +56,7 @@ module.exports = (server) => {
             path: "/api/products/{id}",
             handler: productController.updateProductById,
             options: {
+                auth: 'session',
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
@@ -73,6 +77,7 @@ module.exports = (server) => {
             path: "/api/products/{id}",
             handler: productController.deleteProductById,
             options: {
+                auth: 'session',
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
@@ -86,6 +91,7 @@ module.exports = (server) => {
             path: "/api/products/{id}/stock",
             handler: productController.updateProductStock,
             options: {
+                auth: 'session',
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
