@@ -69,6 +69,23 @@ module.exports = (server) => {
                     })
                 }
             }
+        },
+        {
+            // Separat end point för att enkelt öka och minska lagersaldo.
+            method: "PATCH",
+            path: "/api/products/{id}/stock",
+            handler: productController.updateProductStock,
+            options: {
+                validate: {
+                    params: Joi.object({
+                        id: Joi.string().length(24).required()
+                    }),
+                    payload: Joi.object({
+                        amount: Joi.number().integer().required() // positiv = öka, negativ = minska
+                    })
+                }
+            }
         }
     ])
+
 }

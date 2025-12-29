@@ -74,3 +74,32 @@ exports.deleteProductById = async (request, h) => {
         return h.response({ error: 'Could not delete product' }).code(500);
     }
 };
+
+// Justera lagersaldo med enkel öka/minska funktion.
+exports.updateProductStock = async (request, h) => {
+    try {
+        const { id } = request.params;
+        const { amount } = request.payload;
+
+        // Hämta produkten
+        const product = await Product.findById(id);
+        if (!product) {
+            return h.response({ error: 'Product not found' }).code(404);
+        }
+
+        // Justera stock
+        const newStock = product.stock + amount;
+        if (newStock < 0) {
+            return h.response({ error: 'Stock cannot be negative' }).code(400);
+        }
+        product.stock = newStock;
+
+        // Spara ändringen
+        const updatedProduct = await product.save();
+
+        return h.response({ product: updatedProduct }).code(200);
+    } catch (error) {
+        console.error(error);
+        return h.response({ error: 'Could not update product stock' }).code(500);
+    }
+};
