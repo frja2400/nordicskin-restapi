@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 // Hämta alla användare
 exports.getAllUsers = async (request, h) => {
@@ -72,4 +73,73 @@ exports.deleteUserById = async (request, h) => {
     } catch (error) {
         return h.response({ error: 'Could not delete user' }).code(500);
     }
+};
+
+// Funktion för att registrera en ny användare med lösenordshashning
+exports.registerUser = async (request, h) => {
+    try {
+        const { name, email, phone, department, password } = request.payload;
+
+        // Kontrollera om e-post redan finns
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return h.response({ error: 'Email already registered' }).code(400);
+        }
+
+        // Hasha lösenordet
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Skapa ny användare med hashat lösenord
+        const newUser = new User({
+            name,
+            email,
+            phone,
+            department,
+            password: hashedPassword
+        });
+
+        // Spara användaren
+        const savedUser = await newUser.save();
+
+        return h.response({ user: savedUser }).code(201);
+    } catch (error) {
+        console.error(error);
+        return h.response({ error: 'Could not register user' }).code(500);
+    }
+};
+
+// Funktion för att logga in en användare
+exports.loginUser = async (request, h) => {
+    try {
+        const { email, password } = request.payload;
+
+        // Hitta användaren med email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return h.response({ error: 'Invalid email or password' }).code(401);
+        }
+
+        // Jämför lösenord med hash
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+            return h.response({ error: 'Invalid email or password' }).code(401);
+        }
+
+        // Sätt HTTP-only cookie med session
+        request.cookieAuth.set({ id: user._id, name: user.name });
+
+        return h.response({ message: 'Login successful', user: { id: user._id, name: user.name } }).code(200);
+
+    } catch (error) {
+        console.error(error);
+        return h.response({ error: 'Could not log in user' }).code(500);
+    }
+};
+
+// Logga ut-funktion
+exports.logoutUser = (request, h) => {
+    // Tar bort cookien
+    request.cookieAuth.clear();
+
+    return h.response({ message: 'Logged out successfully' }).code(200);
 };

@@ -7,13 +7,17 @@ module.exports = (server) => {
         {
             method: "GET",
             path: "/api/users",
-            handler: userController.getAllUsers
+            handler: userController.getAllUsers,
+            options: {
+                auth: 'session' // kräver inloggning
+            }
         },
         {
             method: "GET",
             path: "/api/users/{id}",
             handler: userController.getUserById,
             options: {
+                auth: 'session', // kräver inloggning
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
@@ -26,6 +30,7 @@ module.exports = (server) => {
             path: "/api/users",
             handler: userController.addUser,
             options: {
+                auth: 'session', // kräver inloggning
                 validate: {
                     payload: Joi.object({
                         name: Joi.string().min(2).required(),
@@ -42,6 +47,7 @@ module.exports = (server) => {
             path: "/api/users/{id}",
             handler: userController.updateUserById,
             options: {
+                auth: 'session', // kräver inloggning
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
@@ -61,11 +67,54 @@ module.exports = (server) => {
             path: "/api/users/{id}",
             handler: userController.deleteUserById,
             options: {
+                auth: 'session', // kräver inloggning
                 validate: {
                     params: Joi.object({
                         id: Joi.string().length(24).required()
                     })
                 }
+            }
+        },
+        {
+            // Route för användarregistrering
+            method: "POST",
+            path: "/api/register",
+            handler: userController.registerUser,
+            options: {
+                auth: false, // ingen auth behövs för att registrera sig
+                validate: {
+                    payload: Joi.object({
+                        name: Joi.string().min(2).required(),
+                        email: Joi.string().email().required(),
+                        phone: Joi.string().required(),
+                        department: Joi.string().required(),
+                        password: Joi.string().min(8).required()
+                    })
+                }
+            }
+        },
+        {
+            // Route för användarinloggning
+            method: "POST",
+            path: "/api/login",
+            handler: userController.loginUser,
+            options: {
+                auth: false, // ingen auth behövs för att logga in
+                validate: {
+                    payload: Joi.object({
+                        email: Joi.string().email().required(),
+                        password: Joi.string().required()
+                    })
+                }
+            }
+        },
+        {
+            // Route för att logga ut en användare
+            method: "POST",
+            path: "/api/logout",
+            handler: userController.logoutUser,
+            options: {
+                auth: 'session' // användaren måste vara inloggad för att logga ut
             }
         }
     ])
