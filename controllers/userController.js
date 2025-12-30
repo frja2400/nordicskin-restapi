@@ -143,3 +143,19 @@ exports.logoutUser = (request, h) => {
 
     return h.response({ message: 'Logged out successfully' }).code(200);
 };
+
+// Hämta info om inloggad användare
+exports.getMe = async (request, h) => {
+    try {
+        const userId = request.auth.credentials.id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return h.response({ message: 'User not found' }).code(401);
+        }
+
+        return user;
+    } catch (error) {
+        return h.response({ message: 'Could not fetch user' }).code(500);
+    }
+};

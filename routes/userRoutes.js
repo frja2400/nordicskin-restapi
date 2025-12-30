@@ -116,6 +116,15 @@ module.exports = (server) => {
             options: {
                 auth: 'session' // användaren måste vara inloggad för att logga ut
             }
+        },
+        {
+            // Nyckel till frontend för att hämta info om inloggad användare
+            method: "GET",
+            path: "/api/me",
+            handler: userController.getMe,
+            options: {
+                auth: 'session'
+            }
         }
     ])
 }

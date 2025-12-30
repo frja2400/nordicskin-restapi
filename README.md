@@ -49,7 +49,8 @@ const userSchema = new mongoose.Schema({
 | GET    | `/api/users`              | Hämtar alla användare.                        |
 | GET    | `/api/users/:id`          | Hämtar specifik användare.                    |
 | PUT    | `/api/users/:id`          | Uppdaterar användare.                         |
-| DELETE | `/api/users/:id`          | Raderar användare.                           |
+| DELETE | `/api/users/:id`          | Raderar användare.                            |
+| GET    | `/api/me`                 | Hämtar aktuell inloggad användare.            |
 
 **Produkter:**
 | Metod  | Ändpunkt                  | Beskrivning                                   |
@@ -76,6 +77,7 @@ API:et använder session-baserad autentisering med HTTP Cookies via @hapi/cookie
 - Alla andra routes är skyddade.
 - Session lagras i en HTTP-only cookie.
 - Utloggning rensar session-cookien.
+API:et innehåller även en endpoint (/api/me) som används av frontend för att kontrollera om användaren är inloggad och hämta användaruppgifter baserat på sessionscookie.
 
 ## Sökning, filtrering, sortering
 
