@@ -77,7 +77,7 @@ API:et använder session-baserad autentisering med HTTP Cookies via @hapi/cookie
 - Alla andra routes är skyddade.
 - Session lagras i en HTTP-only cookie.
 - Utloggning rensar session-cookien.
-API:et innehåller även en endpoint (/api/me) som används av frontend för att kontrollera om användaren är inloggad och hämta användaruppgifter baserat på sessionscookie.
+- API:et innehåller en endpoint (/api/me) som används av frontend för att kontrollera om användaren är inloggad och hämta användaruppgifter baserat på sessionscookie.
 
 ## Sökning, filtrering, sortering
 
