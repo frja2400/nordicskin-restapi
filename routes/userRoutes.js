@@ -114,7 +114,7 @@ module.exports = (server) => {
             path: "/api/logout",
             handler: userController.logoutUser,
             options: {
-                auth: 'session' // användaren måste vara inloggad för att logga ut
+                auth: false
             }
         },
         {
