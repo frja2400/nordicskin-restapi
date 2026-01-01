@@ -73,10 +73,10 @@ Validerar routes med Joi:
 ## Autentisering med HTTP Cookie
 
 API:et använder session-baserad autentisering med HTTP Cookies via @hapi/cookie:
-- Registrering och inloggning är öppna routes.
+- Registrering, inloggning och utloggning är öppna routes.
 - Alla andra routes är skyddade.
 - Session lagras i en HTTP-only cookie.
-- Utloggning rensar session-cookien.
+- Utloggning rensar session-cookien om den finns.
 - API:et innehåller en endpoint (/api/me) som används av frontend för att kontrollera om användaren är inloggad och hämta användaruppgifter baserat på sessionscookie.
 
 ## Sökning, filtrering, sortering
