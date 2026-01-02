@@ -48,6 +48,11 @@ exports.updateUserById = async (request, h) => {
         // Hämta data att uppdatera från payload
         const updateData = request.payload;
 
+        // Blockera lösenordsändringar via denna route
+        if (updateData.password) {
+            return h.response({ error: 'Password cannot be updated via this endpoint' }).code(400);
+        }
+
         // Hitta och uppdatera användaren med data från request.payload och returnera den uppdaterade användaren
         const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
 
