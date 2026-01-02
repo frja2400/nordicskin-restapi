@@ -8,72 +8,76 @@ const productRoutes = require('./routes/productRoutes');
 require('dotenv').config();
 
 const init = async () => {
+  // Render sätter automatiskt RENDER=true
+  const isProduction = process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
 
-    const server = Hapi.server({
-        port: process.env.PORT || 3000,
-        host: '0.0.0.0',
-        routes: {
-            cors: {
-                origin: ['http://localhost:5173'], // Frontend URL
-                credentials: true                  // Tillåter cookies
-            }
-        }
+  const server = Hapi.server({
+    port: process.env.PORT || 3000,
+    host: '0.0.0.0',
+    routes: {
+      cors: {
+        origin: [
+          'http://localhost:5173'
+        ],
+        credentials: true
+      }
+    }
+  });
+
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('Connected to MongoDB');
+
+    await server.register(Cookie);
+
+    server.auth.strategy('session', 'cookie', {
+      cookie: {
+        name: 'nordicskin-session',
+        password: process.env.COOKIE_PASSWORD,
+        isSecure: isProduction,              // true på Render
+        isHttpOnly: true,
+        isSameSite: isProduction ? 'None' : 'Lax',
+        clearInvalid: true,
+        strictHeader: true,
+        encoding: 'iron',
+        path: '/'
+      },
+      redirectTo: false,
+      validate: async (request, session) => {
+        if (!session.id) return { isValid: false };
+        return { isValid: true, credentials: session };
+      }
     });
 
-    try {
-        // Anslut till MongoDB
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('Connected to MongoDB');
+    server.auth.default('session');
 
-        // Registrera cookie-plugin
-        await server.register(Cookie);
+    userRoutes(server);
+    productRoutes(server);
 
-        // Skapa auth-strategi
-        server.auth.strategy('session', 'cookie', {
-            cookie: {
-                name: 'nordicskin-session',
-                password: process.env.COOKIE_PASSWORD,
-                isSecure: false,
-                isHttpOnly: true
-            },
-            redirectTo: false,
-            validate: async (request, session) => {
-                if (!session.id) {
-                    return { isValid: false };
-                }
-                return {
-                    isValid: true,
-                    credentials: session
-                };
-            }
-        });
+    server.route({
+      method: 'GET',
+      path: '/',
+      handler: () =>
+        `<h1>Välkommen till mitt REST-API!</h1>
+        <p>Se README.md för information om webbtjänsten och endpoints.</p>`,
+      options: {
+        auth: false
+      }
+    });
 
-        // Registrera routes
-        userRoutes(server);
-        productRoutes(server);
+    await server.start();
+    console.log(`Server running on ${server.info.uri} (Production: ${isProduction})`);
 
-        // Root-route för live-servern
-        server.route({
-            method: 'GET',
-            path: '/',
-            handler: () => `
-                <h1>Välkommen till mitt REST-API!</h1>
-                <p>Se README.md för information om webbtjänsten och endpoints.</p>
-            `
-        });
-
-        await server.start();
-        console.log('Server running on %s', server.info.uri);
-
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 };
 
+// Hantera unhandled rejections
 process.on('unhandledRejection', (err) => {
-    console.log(err);
-    process.exit(1);
+  console.log(err);
+  process.exit(1);
 });
 
 init();
