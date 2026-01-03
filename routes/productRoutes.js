@@ -62,12 +62,12 @@ module.exports = (server) => {
                         id: Joi.string().length(24).required()
                     }),
                     payload: Joi.object({
-                        name: Joi.string().min(1),
-                        price: Joi.number().positive(),
-                        stock: Joi.number().integer().min(0),
-                        description: Joi.string().allow(''),
-                        category: Joi.string(),
-                        imageUrl: Joi.string().uri()
+                        name: Joi.string().min(1).required(),
+                        price: Joi.number().positive().required(),
+                        stock: Joi.number().integer().min(0).required(),
+                        description: Joi.string().min(1).required(),
+                        category: Joi.string().required(),
+                        imageUrl: Joi.string().uri().required()
                     })
                 }
             }
