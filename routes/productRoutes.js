@@ -44,9 +44,9 @@ module.exports = (server) => {
                         name: Joi.string().min(1).required(),
                         price: Joi.number().positive().required(),
                         stock: Joi.number().integer().min(0).required(),
-                        description: Joi.string().allow('').optional(),
+                        description: Joi.string().min(1).required(),
                         category: Joi.string().required(),
-                        imageUrl: Joi.string().uri().optional()
+                        imageUrl: Joi.string().uri().required()
                     })
                 }
             }
