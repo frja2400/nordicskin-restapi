@@ -17,8 +17,10 @@ exports.getAllProducts = async (request, h) => {
 
         // Bygg query med sort
         let productsQuery = Product.find(query);
-        if (sort) {
-            productsQuery = productsQuery.sort({ [sort]: 1 }); // 1 = stigande
+        if (sort === 'updatedAt') {
+            productsQuery = productsQuery.sort({ updatedAt: -1 }); // Nyast först
+        } else if (sort) {
+            productsQuery = productsQuery.sort({ [sort]: 1 }); // Övriga stigande
         }
 
         // Kör queryn mot databasen och hämtar resultaten
