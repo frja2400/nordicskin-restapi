@@ -17,7 +17,8 @@ const init = async () => {
     routes: {
       cors: {
         origin: [
-          'http://localhost:5173'
+          'http://localhost:5173',
+          'https://nordicskin.netlify.app'
         ],
         credentials: true
       }
